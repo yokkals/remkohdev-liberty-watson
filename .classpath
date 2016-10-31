@@ -12,5 +12,12 @@
 	<classpathentry kind="lib" path="dep-jar/com.ibm.ws.javaee.jaxrs.1.1_1.0.1.jar"/>
 	<classpathentry kind="lib" path="dep-jar/javax.servlet_3.0.0.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/cloudant-client-2.0.0.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/alchemy-3.5.1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-lang3-3.5.jar"/>
+	<classpathentry kind="lib" path="/Users/remko/dev/lib/java/ibmwatson-java-sdk/core/target/core-3.5.1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/core-3.5.1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/okhttp-3.5.0-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/okio-1.12.0-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/okhttp-urlconnection-3.5.0-SNAPSHOT.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

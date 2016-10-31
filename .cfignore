@@ -2,3 +2,4 @@
 *.war
 target/
 .settings/
+.DS_Store
