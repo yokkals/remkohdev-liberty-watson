@@ -1,5 +1,10 @@
 package com.remkohde.dev.liberty;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,6 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.ibm.watson.developer_cloud.alchemy.v1.AlchemyDataNews;
 import com.ibm.watson.developer_cloud.alchemy.v1.model.Documents;
 import com.ibm.watson.developer_cloud.alchemy.v1.model.DocumentsResult;
@@ -25,21 +31,23 @@ import com.ibm.watson.developer_cloud.alchemy.v1.model.DocumentsResult;
  * @see http://docs.alchemyapi.com/
  */
 public class WatsonNewsServlet {
-
+	private JsonObject bluemixConf = null;
+	private String alchemyApikey = null;
+	
 	public WatsonNewsServlet() {
+		loadBluemixProperties();
+		loadAlchemyApikey();
 	}
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response get(@QueryParam("startdate") String startdate, @QueryParam("enddate") String enddate, 
 			@QueryParam("searchterm") String searchterm, @QueryParam("count") String count) 
-	throws Exception {
-		
+	throws Exception {		
 		JsonArray jsonArrayResponse = new JsonArray();
 		
-		DocumentsResult result =  this.getAlchemyDataNews() ;
+		DocumentsResult result =  this.getAlchemyDataNews(searchterm, "company") ;
 		Documents docs = result.getDocuments();
-		
 		
 		JsonObject jsonObject = new JsonObject();
 		jsonObject.addProperty("startdate", startdate);
@@ -52,31 +60,70 @@ public class WatsonNewsServlet {
 	}
 	
 	
-	public DocumentsResult getAlchemyDataNews() {
-		// call alchemyAPI Data News
-				AlchemyDataNews service = new AlchemyDataNews("289dfc336c56524c0512211fdaca41e71f7145c9");
+	public DocumentsResult getAlchemyDataNews(String searchTerm, String entityType) {		
+		// Configure the AlchemyAPI Data News
+		AlchemyDataNews service = new AlchemyDataNews(alchemyApikey);
 
-			    Map<String, Object> params = new HashMap<String, Object>();
+	    Map<String, Object> params = new HashMap<String, Object>();
 
-			    String[] fields =
-			        new String[] { "enriched.url.title", "enriched.url.url", "enriched.url.author", "enriched.url.publicationDate",
-			            "enriched.url.enrichedTitle.entities", "enriched.url.enrichedTitle.docSentiment"};
-			    params.put(AlchemyDataNews.RETURN, StringUtils.join(fields, ","));
-			    params.put(AlchemyDataNews.START, "1440720000");
-			    params.put(AlchemyDataNews.END, "1441407600");
-			    params.put(AlchemyDataNews.COUNT, 7);
+	    String[] fields =
+	        new String[] { "enriched.url.title", "enriched.url.url", "enriched.url.author", "enriched.url.publicationDate",
+	            "enriched.url.enrichedTitle.entities", "enriched.url.enrichedTitle.docSentiment"};
+	    params.put(AlchemyDataNews.RETURN, StringUtils.join(fields, ","));
+	    params.put(AlchemyDataNews.START, "1440720000");
+	    params.put(AlchemyDataNews.END, "1441407600");
+	    params.put(AlchemyDataNews.COUNT, 7);
 
-			    // Query on adjacent nested fields:
-			    params.put("q.enriched.url.enrichedTitle.entities.entity", "|text=IBM,type=company|");
-			    params.put("q.enriched.url.enrichedTitle.docSentiment.type", "positive");
-			    params.put("q.enriched.url.enrichedTitle.taxonomy.taxonomy_.label", "technology and computing");
+	    // Query on adjacent nested fields:
+	    params.put("q.enriched.url.enrichedTitle.entities.entity", "|text="+searchTerm+",type="+entityType+"|");
+	    params.put("q.enriched.url.enrichedTitle.docSentiment.type", "positive");
+	    params.put("q.enriched.url.enrichedTitle.taxonomy.taxonomy_.label", "technology and computing");
 
-			    //Map<String, Object>
-			    DocumentsResult result = service.getNewsDocuments(params).execute();
+	    //Map<String, Object>
+	    DocumentsResult result = service.getNewsDocuments(params).execute();
 
-			    System.out.println(result);
-			    
-			    return result;
+	    System.out.println(result);
+	    
+	    return result;
+	}
+	
+	/**
+	 * Method to load the Bluemix configuration from either the Bluemix system 
+	 * variable VCAP_SERVICES and if not available from Bluemix, for instance
+	 * because running on localhost, load the configuration from a local 
+	 * properties file ~/WebContent/WEB-INF/classes/bluemix.json
+	 */
+	private void loadBluemixProperties(){
+		try {
+			String vcapServices = System.getenv("VCAP_SERVICES");
+			if (vcapServices != null) {
+				this.bluemixConf = (JsonObject) new JsonParser().parse(vcapServices);
+			}else{
+				InputStream in = getClass().getClassLoader().getResourceAsStream("bluemix.json");				
+				BufferedReader streamReader = new BufferedReader(new InputStreamReader(in, "UTF-8"));		
+				StringBuilder sb = new StringBuilder();
+				String inputStr;
+				while((inputStr = streamReader.readLine()) != null){
+				    sb.append(inputStr);
+				}			
+				this.bluemixConf = (JsonObject) new JsonParser().parse(sb.toString());
+			}
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		} 
+	}
+	
+	/**
+	 * Load the AlchemyAPI apikey from the Bluemix configuration.
+	 */
+	private void loadAlchemyApikey() {		
+		JsonArray alchemyAPIConfig = bluemixConf.getAsJsonArray("alchemy_api");
+		JsonObject alchemyAPIConfig1 = (JsonObject) alchemyAPIConfig.get(0); 
+		JsonObject alchemyAPICredentials = alchemyAPIConfig1.getAsJsonObject("credentials");
+		this.alchemyApikey = alchemyAPICredentials.get("apikey").getAsString();
+		System.out.println("AlchemyApikey: "+alchemyApikey);		
 	}
 
 }
