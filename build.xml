@@ -11,7 +11,7 @@
 	        <isset property="env.ARCHIVE_DIR" />
 	</condition>
 	
-	<property name="warname" value="RemkohdevLibertyWatson.war"/>
+	<property name="warname" value="JavaCloudantApp.war"/>
 	
     <path id="classpathDir">
         <pathelement location="bin"/>

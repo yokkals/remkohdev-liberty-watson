@@ -74,7 +74,7 @@
 	      },
 	      submitHandler: function (form, e) {
 	      	//e.preventDefault();
-	      	$('form#searchform').attr('action', '../news')
+	      	$('form#searchform').attr('action', '/news')
 	        form.submit();
 	      }
 	    });
