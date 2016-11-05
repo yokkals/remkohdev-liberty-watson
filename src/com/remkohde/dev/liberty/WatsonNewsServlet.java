@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,11 +19,11 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.ibm.watson.developer_cloud.alchemy.v1.AlchemyDataNews;
-import com.ibm.watson.developer_cloud.alchemy.v1.model.Documents;
 import com.ibm.watson.developer_cloud.alchemy.v1.model.DocumentsResult;
 
 
@@ -31,6 +33,7 @@ import com.ibm.watson.developer_cloud.alchemy.v1.model.DocumentsResult;
  * @see http://docs.alchemyapi.com/
  */
 public class WatsonNewsServlet {
+	
 	private JsonObject bluemixConf = null;
 	private String alchemyApikey = null;
 	
@@ -41,26 +44,66 @@ public class WatsonNewsServlet {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response get(@QueryParam("startdate") String startdate, @QueryParam("enddate") String enddate, 
+	public Response get( 
+			@QueryParam("startdate") String startdate, @QueryParam("enddate") String enddate, 
 			@QueryParam("searchterm") String searchterm, @QueryParam("count") String count) 
 	throws Exception {		
-		JsonArray jsonArrayResponse = new JsonArray();
 		
-		DocumentsResult result =  this.getAlchemyDataNews(searchterm, "company") ;
-		Documents docs = result.getDocuments();
+		// format arguments
+		SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");	
+		// startdate
+		Calendar startdate1 = Calendar.getInstance();
+		startdate1.setTime(format1.parse(startdate));
+		long startdate2 = startdate1.getTimeInMillis()/1000;
+		// enddate
+		Calendar enddate1 = Calendar.getInstance();
+		enddate1.setTime(format1.parse(enddate));
+		long enddate2 = enddate1.getTimeInMillis()/1000;
+		// count
+		int cnt = Integer.valueOf(count).intValue();
 		
+		// get alchemydata news 
+		DocumentsResult result =  this.getAlchemyDataNews(startdate2, enddate2, searchterm, cnt) ;
+		
+		// serialize results to json
+		Gson gson = new Gson();
+		String json = gson.toJson(result);
+
+		// create response
 		JsonObject jsonObject = new JsonObject();
+		jsonObject.addProperty("docs", json);
 		jsonObject.addProperty("startdate", startdate);
 		jsonObject.addProperty("enddate", enddate);
 		jsonObject.addProperty("searchterm", searchterm);
 		jsonObject.addProperty("count", count);
+		
+		JsonArray jsonArrayResponse = new JsonArray();
 		jsonArrayResponse.add(jsonObject);
 
 		return Response.ok(jsonArrayResponse.toString()).build();
+		
 	}
 	
-	
-	public DocumentsResult getAlchemyDataNews(String searchTerm, String entityType) {		
+	/**
+	 * 
+	 * @param startdate
+	 * @param enddate
+	 * @param searchTerm
+	 * @param entityType
+	 * @param count
+	 * @return
+	 */
+	public DocumentsResult getAlchemyDataNews(long startdate, long enddate, String searchTerm, int count) {		
+		/**
+		// 1day = 24 hours * 60 minutes * 60 seconds = 86400
+		long oneday = new Long(86400).longValue();	
+		Calendar now = Calendar.getInstance();
+		long nowdays = (now.getTimeInMillis()/1000) / oneday;	
+		long startdays = nowdays - (startdate / oneday);
+		long enddays = nowdays - (enddate / oneday);
+		String startdateindays = "now-"+startdays+"d";
+		String enddateindays = "now-"+enddays+"d";
+		*/ 
 		// Configure the AlchemyAPI Data News
 		AlchemyDataNews service = new AlchemyDataNews(alchemyApikey);
 
@@ -70,19 +113,17 @@ public class WatsonNewsServlet {
 	        new String[] { "enriched.url.title", "enriched.url.url", "enriched.url.author", "enriched.url.publicationDate",
 	            "enriched.url.enrichedTitle.entities", "enriched.url.enrichedTitle.docSentiment"};
 	    params.put(AlchemyDataNews.RETURN, StringUtils.join(fields, ","));
-	    params.put(AlchemyDataNews.START, "1440720000");
-	    params.put(AlchemyDataNews.END, "1441407600");
-	    params.put(AlchemyDataNews.COUNT, 7);
+	    params.put(AlchemyDataNews.START, startdate);
+	    params.put(AlchemyDataNews.END, enddate);
+	    params.put(AlchemyDataNews.COUNT, count);
 
 	    // Query on adjacent nested fields:
-	    params.put("q.enriched.url.enrichedTitle.entities.entity", "|text="+searchTerm+",type="+entityType+"|");
-	    params.put("q.enriched.url.enrichedTitle.docSentiment.type", "positive");
-	    params.put("q.enriched.url.enrichedTitle.taxonomy.taxonomy_.label", "technology and computing");
+	    params.put("q.enriched.url.enrichedTitle.keywords.keyword.text", searchTerm);
+	    //params.put("q.enriched.url.enrichedTitle.entities.entity", "|text=IBM,type=company|");
+	    //params.put("q.enriched.url.enrichedTitle.docSentiment.type", "positive");
+	    //params.put("q.enriched.url.enrichedTitle.taxonomy.taxonomy_.label", "technology and computing");
 
-	    //Map<String, Object>
 	    DocumentsResult result = service.getNewsDocuments(params).execute();
-
-	    System.out.println(result);
 	    
 	    return result;
 	}

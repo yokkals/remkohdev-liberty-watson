@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>News Analyzer</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no"/>
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	
+	<link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+
+	<div>
+		<header>
+			<h1>Bluemix Workshop</h1>
+		</header>	
+		<section id='appinfo'>
+			<h1>News Analyzer</h1>
+		  	<form action="" method="GET" id="searchform">
+		    <div>
+		      <label for="startdate">Startdate:</label> 
+		      <input type="date" name="startdate">
+		    </div>
+		    <div>
+		      <label for="enddate">Enddate:</label> 
+		      <input type="date" name="enddate">
+		    </div>
+		    <div>
+		      <label for="searchterm">Search for:</label>
+		      <input type="text" name="searchterm">
+		    </div>
+		    <div>
+		      <label for="">Number of results</label>
+		      <select name="count">
+		      	  <option value="5">5</option>
+		          <option value="25">25</option>
+		          <option value="100">100</option>
+		          <option value="500">500</option>
+		          <option value="1000">1000</option>
+		      </select>
+		    </div>
+		    <div><button type="submit">Submit</button> </div>
+		  </form>
+
+		</section>
+		
+		<footer>
+			<div id="errorDiv" class='errorMsg'></div>	
+		</footer>
+
+	</div>
+	
+	<script type="text/javascript" src="../js/util.js"></script>
+	<script type="text/javascript" src="../js/index.js"></script>
+	<script type=text/javascript   src="../js/jquery/jquery-3.1.1.min.js"></script>
+  	<script type=text/javascript   src="../js/jquery/jquery-validation-1.15.1/dist/jquery.validate.min.js"></script>
+  	<script type="text/javascript">
+  	
+	  var validator = 
+	    $('#searchform').validate({ 
+	      rules: {
+	        startdate: {
+	          required: false
+	        },
+	        enddate: {
+	          required: false
+	        },
+	        searchterm: {
+	          required: true
+	        },
+	        count: {
+	          required: false
+	        }
+	      },
+	      submitHandler: function (form, e) {
+	      	//e.preventDefault();
+	      	$('form#searchform').attr('action', '/news')
+	        form.submit();
+	      }
+	    });
+
+  	</script>
+</body>
+</html>

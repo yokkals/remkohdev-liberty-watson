@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>News Analyzer</title>
+	<title>Bluemix Workshop</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no"/>
 	<meta name="apple-mobile-web-app-capable" content="yes" />
@@ -9,50 +9,21 @@
 	<link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-	<!-- comment -->
-	<div class="leftHalf">	
-		<h1>News Analyzer</h1>
-	</div>
-	
-	<div class = "rightHalf">
+
+	<div>
 		<header>
-		
+			<h1>Bluemix Workshop</h1>
 		</header>	
+		
 		<section id='appinfo'>
-		  <form action="api/watson/news" method="get" id="searchform">
-		    <div>
-		      <label for="startdate">Startdate:</label> 
-		      <input type="date" name="startdate">
-		    </div>
-		    <div>
-		      <label for="enddate">Enddate:</label> 
-		      <input type="date" name="enddate">
-		    </div>
-		    <div>
-		      <label for="searchterm">Search for:</label>
-		      <input type="text" name="searchterm">
-		    </div>
-		    <div>
-		      <label for="">Number of results</label>
-		      <select name="count">
-		          <option value="25">25</option>
-		          <option value="100">100</option>
-		          <option value="500">500</option>
-		          <option value="1000">1000</option>
-		      </select>
-		    </div>
-		    <div><button type="submit">Submit</button> </div>
-		  </form>
- 
+		  <a href="pages/newsanalysis_searchform.jsp">News Analyzer</a>
 		</section>
 		
 		<footer>
 			<div id="errorDiv" class='errorMsg'></div>	
 		</footer>
 
-	</div><!-- /.rightHalf -->
+	</div>
 	
-	<script type="text/javascript" src="js/util.js"></script>
-	<script type="text/javascript" src="js/index.js"></script>
 </body>
 </html>
