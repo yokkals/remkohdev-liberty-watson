@@ -1,5 +1,5 @@
 applications:
-- path: RemkohdevLibertyWatson.war
+- path: JavaCloudantDBApp.war
   memory: 512M
   instances: 1
   domain: mybluemix.net
