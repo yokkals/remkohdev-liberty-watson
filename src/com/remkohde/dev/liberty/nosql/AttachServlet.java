@@ -1,4 +1,4 @@
-package example.nosql;
+package com.remkohde.dev.liberty.nosql;
 
 import java.io.IOException;
 import java.io.InputStream;

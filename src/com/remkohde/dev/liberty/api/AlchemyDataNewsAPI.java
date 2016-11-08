@@ -1,4 +1,4 @@
-package com.remkohde.dev.liberty;
+package com.remkohde.dev.liberty.api;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -33,12 +33,12 @@ import com.ibm.watson.developer_cloud.alchemy.v1.model.DocumentsResult;
  * REST service to search AlchemyData News API.
  * @see http://docs.alchemyapi.com/
  */
-public class WatsonNewsServlet {
+public class AlchemyDataNewsAPI {
 	
 	private JsonObject bluemixConf = null;
 	private String alchemyApikey = null;
 	
-	public WatsonNewsServlet() {
+	public AlchemyDataNewsAPI() {
 		loadBluemixProperties();
 		loadAlchemyApikey();
 	}
@@ -46,8 +46,10 @@ public class WatsonNewsServlet {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response get(
-			@QueryParam("startdate") String startdate, @QueryParam("enddate") String enddate, 
-			@QueryParam("searchterm") String searchterm, @QueryParam("count") String count) 
+			@QueryParam("startdate") String startdate, 
+			@QueryParam("enddate") String enddate, 
+			@QueryParam("searchterm") String searchterm, 
+			@QueryParam("count") String count) 
 	throws Exception {		
 		
 		// format arguments

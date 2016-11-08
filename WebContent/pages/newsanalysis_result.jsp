@@ -31,8 +31,13 @@
 	-->
 	<script type="text/javascript">
 	var alchemyResults = ${alchemyResults};
+	var cloudantResults = ${cloudantResults};
+	
 	var divOut = document.getElementById("out");
-	divOut.innerHTML = JSON.stringify(alchemyResults);
+	divOut.innerHTML += "<br><br>AlchemyResults:<br>";
+	divOut.innerHTML += JSON.stringify(alchemyResults);
+	divOut.innerHTML += "<br><br>CloudantResults:<br>";
+	divOut.innerHTML += JSON.stringify(cloudantResults);
 	</script>
 </body>
 </html>

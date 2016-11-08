@@ -1,4 +1,4 @@
-package example.nosql;
+package com.remkohde.dev.liberty.nosql;
 
 import java.util.Map.Entry;
 import java.util.Set;
