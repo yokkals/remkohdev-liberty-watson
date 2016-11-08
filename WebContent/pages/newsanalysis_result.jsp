@@ -14,8 +14,17 @@
 
 <body>
 	<div>
+		=====1=====<br>
+		<c:out value= "${alchemyResults}"/>
+		=====2=====<br>
+		<c:out  value= "${requestScope.alchemyResults}"/>
+		=====3=====<br>
+		<c:out  value= "${requestScope.request.alchemyResults}"/>
+		=====4=====<br>
+		${alchemyResults}
+		=====5=====<br>
 		<%
-		out.println(request.getAttribute("servletName"));
+		out.println(request.getAttribute("alchemyResults"));
 		 %>
 		<header>
 			<h1>Bluemix Workshop</h1>
