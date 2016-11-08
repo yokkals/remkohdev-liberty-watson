@@ -35,12 +35,8 @@ import com.ibm.watson.developer_cloud.alchemy.v1.model.DocumentsResult;
  */
 public class AlchemyDataNewsAPI {
 	
-	private JsonObject bluemixConf = null;
-	private String alchemyApikey = null;
-	
 	public AlchemyDataNewsAPI() {
-		loadBluemixProperties();
-		loadAlchemyApikey();
+		
 	}
 
 	@GET
@@ -96,18 +92,9 @@ public class AlchemyDataNewsAPI {
 	 * @return
 	 */
 	public DocumentsResult getAlchemyDataNews(long startdate, long enddate, String searchTerm, int count) {		
-		/**
-		// 1day = 24 hours * 60 minutes * 60 seconds = 86400
-		long oneday = new Long(86400).longValue();	
-		Calendar now = Calendar.getInstance();
-		long nowdays = (now.getTimeInMillis()/1000) / oneday;	
-		long startdays = nowdays - (startdate / oneday);
-		long enddays = nowdays - (enddate / oneday);
-		String startdateindays = "now-"+startdays+"d";
-		String enddateindays = "now-"+enddays+"d";
-		*/ 
+
 		// Configure the AlchemyAPI Data News
-		AlchemyDataNews service = new AlchemyDataNews(alchemyApikey);
+		AlchemyDataNews service = new AlchemyDataNews(BluemixConfig.getInstance().getAlchemyApikey());
 
 	    Map<String, Object> params = new HashMap<String, Object>();
 
@@ -129,44 +116,8 @@ public class AlchemyDataNewsAPI {
 	    
 	    return result;
 	}
+
 	
-	/**
-	 * Method to load the Bluemix configuration from either the Bluemix system 
-	 * variable VCAP_SERVICES and if not available from Bluemix, for instance
-	 * because running on localhost, load the configuration from a local 
-	 * properties file ~/WebContent/WEB-INF/classes/bluemix.json
-	 */
-	private void loadBluemixProperties(){
-		try {
-			String vcapServices = System.getenv("VCAP_SERVICES");
-			if (vcapServices != null) {
-				this.bluemixConf = (JsonObject) new JsonParser().parse(vcapServices);
-			}else{
-				InputStream in = getClass().getClassLoader().getResourceAsStream("bluemix.json");				
-				BufferedReader streamReader = new BufferedReader(new InputStreamReader(in, "UTF-8"));		
-				StringBuilder sb = new StringBuilder();
-				String inputStr;
-				while((inputStr = streamReader.readLine()) != null){
-				    sb.append(inputStr);
-				}			
-				this.bluemixConf = (JsonObject) new JsonParser().parse(sb.toString());
-			}
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		} catch (IOException ioe) {
-			ioe.printStackTrace();
-		} 
-	}
-	
-	/**
-	 * Load the AlchemyAPI apikey from the Bluemix configuration.
-	 */
-	private void loadAlchemyApikey() {		
-		JsonArray alchemyAPIConfig = bluemixConf.getAsJsonArray("alchemy_api");
-		JsonObject alchemyAPIConfig1 = (JsonObject) alchemyAPIConfig.get(0); 
-		JsonObject alchemyAPICredentials = alchemyAPIConfig1.getAsJsonObject("credentials");
-		this.alchemyApikey = alchemyAPICredentials.get("apikey").getAsString();
-		System.out.println("AlchemyApikey: "+alchemyApikey);		
-	}
+
 
 }
