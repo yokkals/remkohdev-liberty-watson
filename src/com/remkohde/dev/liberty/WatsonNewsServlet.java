@@ -16,6 +16,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -44,7 +45,7 @@ public class WatsonNewsServlet {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response get( 
+	public Response get(
 			@QueryParam("startdate") String startdate, @QueryParam("enddate") String enddate, 
 			@QueryParam("searchterm") String searchterm, @QueryParam("count") String count) 
 	throws Exception {		
@@ -80,8 +81,7 @@ public class WatsonNewsServlet {
 		JsonArray jsonArrayResponse = new JsonArray();
 		jsonArrayResponse.add(jsonObject);
 
-		return Response.ok(jsonArrayResponse.toString()).build();
-		
+		return Response.ok(jsonArrayResponse.toString()).build();	
 	}
 	
 	/**

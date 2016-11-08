@@ -7,6 +7,4 @@
 <title>Watson News - Response</title>
 </head>
 <body>
-
-</body>
-</html>
+HELLOOOOO
