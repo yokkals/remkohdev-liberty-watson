@@ -46,7 +46,7 @@ public class NewsSearchServlet extends HttpServlet {
 		String alchemyResults = callAlchemyNewsApi(startdate, enddate, searchterm, count);
 		request.getSession().setAttribute("alchemyResults", alchemyResults);
 		
-		request.getRequestDispatcher("pages/response.jsp").include(request, response);		
+		//request.getRequestDispatcher("pages/response.jsp").include(request, response);		
 		request.getRequestDispatcher("pages/newsanalysis_result.jsp").forward(request, response);
 	}
 
