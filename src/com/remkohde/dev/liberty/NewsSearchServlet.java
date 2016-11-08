@@ -64,6 +64,7 @@ public class NewsSearchServlet extends HttpServlet {
 		String response = "";
 		try {
 			String params = "startdate="+startdate+"&enddate="+enddate+"&searchterm="+searchterm+"&count="+count;
+			//String urlString = "http://localhost:9080/JavaCloudantDBApp/api/watson/news?"+params;
 			String urlString = "http://remkohdev-liberty-watson.mybluemix.net/api/watson/news?"+params;
 			URL url = new URL(urlString);
 			
