@@ -32,7 +32,7 @@ page language="java"
 	<script type="text/javascript" src="js/index.js"></script>
 	-->
 	<script type="text/javascript">
-	var alchemyResults = ${alchemyResults};
+	var alchemyResults = alchemyResults;
 	var divOut = document.getElementById("out");
 	divOut.innerHTML = JSON.stringify(alchemyResults);
 	</script>
