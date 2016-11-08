@@ -14,6 +14,9 @@
 
 <body>
 	<div>
+		<%
+		out.println(request.getAttribute("servletName"));
+		 %>
 		<header>
 			<h1>Bluemix Workshop</h1>
 		</header>	
