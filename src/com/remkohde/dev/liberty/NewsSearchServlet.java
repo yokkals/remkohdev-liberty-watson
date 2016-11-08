@@ -44,8 +44,8 @@ public class NewsSearchServlet extends HttpServlet {
 		String count = (String) request.getParameter("count");
 	
 		String alchemyResults = callAlchemyNewsApi(startdate, enddate, searchterm, count);
-		request.getSession().setAttribute("alchemyResults", alchemyResults);
 		
+		request.setAttribute("alchemyResults", alchemyResults);
 		request.getRequestDispatcher("pages/response.jsp").include(request, response);		
 		request.getRequestDispatcher("pages/newsanalysis_result.jsp").forward(request, response);
 	}
