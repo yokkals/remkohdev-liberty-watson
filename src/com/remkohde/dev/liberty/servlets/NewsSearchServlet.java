@@ -115,7 +115,7 @@ public class NewsSearchServlet extends HttpServlet {
 		jsonObject.addProperty("id", obj.get("_id") + "");
 		jsonObject.addProperty("results", obj.get("results") + "");
 		
-		return jsonObject.getAsString();
+		return jsonObject.toString();
 	}
 	
 	private String callApi(String method, String urlString, String params){
