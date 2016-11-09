@@ -41,28 +41,31 @@ public class BluemixConfig {
 	}
 	
 	/**
-	 * AlchemyApikey
+	 * AlchemyAPI
 	 * @return
 	 */
 	public String getAlchemyApikey() {
 		return alchemyApikey;
 	}
+	/**
+	 * CloudantDB
+	 * @return
+	 */
 	public String getCloudantDBUsername() {
 		return cloudantDBUsername;
 	}
-
 	public String getCloudantDBPassword() {
 		return cloudantDBPassword;
 	}
-
 	public String getCloudantDBHost() {
 		return cloudantDBHost;
 	}
-
 	public String getCloudantDBPort() {
 		return cloudantDBPort;
 	}
-	
+	public static String getCloudantDatabaseName() {
+		return cloudantDatabaseName;
+	}
 	
 	/**
 	 * Method to load the Bluemix configuration from either the Bluemix system 

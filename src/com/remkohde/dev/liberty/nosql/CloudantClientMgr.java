@@ -55,7 +55,7 @@ public class CloudantClientMgr {
 		}
 		if (db == null) {
 			try {
-				db = cloudant.database(databaseName, true);
+				db = cloudant.database(BluemixConfig.getInstance().getCloudantDatabaseName(), true);
 			} catch (Exception e) {
 				throw new RuntimeException("DB Not found", e);
 			}
