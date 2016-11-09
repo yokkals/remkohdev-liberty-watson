@@ -63,7 +63,7 @@ public class BluemixConfig {
 	public String getCloudantDBPort() {
 		return cloudantDBPort;
 	}
-	public static String getCloudantDatabaseName() {
+	public String getCloudantDatabaseName() {
 		return cloudantDatabaseName;
 	}
 	
