@@ -37,7 +37,9 @@ public class ResourceServlet {
 	}
 
 	@POST
-	public Response create(@QueryParam("id") Long id, @FormParam("name") String name, @FormParam("value") String value)
+	public Response create(@QueryParam("id") Long id, 
+						   @FormParam("name") String name, 
+						   @FormParam("value") String value)
 			throws Exception {
 
 		Database db = null;

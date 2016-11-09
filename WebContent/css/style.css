@@ -6,14 +6,13 @@ body,html {
 	background-color: #3b4b54;
 	width: 100%;
 	height: 100%;
-	margin: 0 auto;
 	font-family: "HelveticaNeue-Light", "Helvetica Neue Light",
 		"Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
 	color: #ffffff;
 }
 
 body {
-	margin-top: 25px;
+  margin: 0px auto;
 }
 
 /* header footer common */
@@ -166,14 +165,16 @@ tr:hover .deleteBtn {
 #appinfo {
 	border-top: 1px solid #fff;
 }
+
 #appinfo td {
 	padding: 5px;
 	height: 50;
 	font-size: small;
-	
 }
 
-
+form#searchform {
+	margin: 25px 0px 0px 50px;	
+}
 
 .errorMsg {
 	color: red;
@@ -206,4 +207,12 @@ h1 {
 a {
   text-decoration: none;
   color: #00aed1;
+}
+
+label {
+  display: inline-block; 
+  width: 200px;
+}
+button {
+  margin: 20px;
 }

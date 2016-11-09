@@ -1,7 +1,15 @@
 package com.remkohde.dev.liberty.nosql;
 
+import java.security.SecureRandom;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.Map.Entry;
 import java.util.Set;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import com.cloudant.client.api.ClientBuilder;
 import com.cloudant.client.api.CloudantClient;
@@ -22,23 +30,21 @@ public class CloudantClientMgr {
 	}
 	
 	private static void initClient() {
-		if (cloudant == null) {
+		if (cloudant==null) {
 			synchronized (CloudantClientMgr.class) {
 				if (cloudant != null) {
 					return;
 				}
 				cloudant = createClient();
-
 			} // end synchronized
 		}
 	}
 
-	private static CloudantClient createClient() {
-		
+	private static CloudantClient createClient() {		
 		String user = BluemixConfig.getInstance().getCloudantDBUsername();
-		String password = BluemixConfig.getInstance().getCloudantDBPassword();
-		
+		String password = BluemixConfig.getInstance().getCloudantDBPassword();	
 		try {
+			System.out.print("=====Create CloudantClient");
 			CloudantClient client = ClientBuilder.account(user)
 					.username(user)
 					.password(password)
@@ -46,11 +52,13 @@ public class CloudantClientMgr {
 			return client;
 		} catch (CouchDbException e) {
 			throw new RuntimeException("Unable to connect to repository", e);
+		} catch (Exception e){
+			throw new RuntimeException("Exception ...", e);
 		}
-	}
+	} 
 
 	public static Database getDB() {
-		if (cloudant == null) {
+		if (cloudant==null) {
 			initClient();
 		}
 		if (db == null) {
@@ -62,4 +70,5 @@ public class CloudantClientMgr {
 		}
 		return db;
 	}
+	
 }

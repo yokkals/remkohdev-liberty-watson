@@ -1,10 +1,5 @@
 package com.remkohde.dev.liberty.api;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -16,14 +11,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.ibm.watson.developer_cloud.alchemy.v1.AlchemyDataNews;
 import com.ibm.watson.developer_cloud.alchemy.v1.model.DocumentsResult;
 
@@ -62,7 +55,8 @@ public class AlchemyDataNewsAPI {
 		int cnt = Integer.valueOf(count).intValue();
 		
 		// get alchemydata news 
-		DocumentsResult result =  this.getAlchemyDataNews(startdate2, enddate2, searchterm, cnt) ;
+		DocumentsResult result = null;
+		result =  this.getAlchemyDataNews(startdate2, enddate2, searchterm, cnt) ;
 		
 		// serialize results to json
 		Gson gson = new Gson();
@@ -98,9 +92,14 @@ public class AlchemyDataNewsAPI {
 
 	    Map<String, Object> params = new HashMap<String, Object>();
 
-	    String[] fields =
-	        new String[] { "enriched.url.title", "enriched.url.url", "enriched.url.author", "enriched.url.publicationDate",
-	            "enriched.url.enrichedTitle.entities", "enriched.url.enrichedTitle.docSentiment"};
+	    String[] fields = new String[] { 
+	    		"enriched.url.title", 
+	    		"enriched.url.url", 
+	    		"enriched.url.author", 
+	    		"enriched.url.publicationDate",
+	            "enriched.url.enrichedTitle.entities", 
+	            "enriched.url.enrichedTitle.docSentiment"
+	          };
 	    params.put(AlchemyDataNews.RETURN, StringUtils.join(fields, ","));
 	    params.put(AlchemyDataNews.START, startdate);
 	    params.put(AlchemyDataNews.END, enddate);
@@ -108,6 +107,7 @@ public class AlchemyDataNewsAPI {
 
 	    // Query on adjacent nested fields:
 	    params.put("q.enriched.url.enrichedTitle.keywords.keyword.text", searchTerm);
+	    // Other examples:
 	    //params.put("q.enriched.url.enrichedTitle.entities.entity", "|text=IBM,type=company|");
 	    //params.put("q.enriched.url.enrichedTitle.docSentiment.type", "positive");
 	    //params.put("q.enriched.url.enrichedTitle.taxonomy.taxonomy_.label", "technology and computing");
