@@ -48,7 +48,6 @@ public class NewsSearchServlet extends HttpServlet {
 		String count = (String) request.getParameter("count");
 	
 		// Search AlchemyData News
-		//String alchemyResults = "[{\"alchemyResults\":\"Hello AlchemyNews\"}]";
 		String alchemyResults = getAlchemyNewsApi(hosturl, startdate, enddate, searchterm, count);
 		request.getSession().setAttribute("alchemyResults", alchemyResults);
 		
