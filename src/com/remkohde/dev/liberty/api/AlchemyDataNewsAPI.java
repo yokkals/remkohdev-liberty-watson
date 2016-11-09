@@ -55,7 +55,8 @@ public class AlchemyDataNewsAPI {
 		int cnt = Integer.valueOf(count).intValue();
 		
 		// get alchemydata news 
-		DocumentsResult result =  this.getAlchemyDataNews(startdate2, enddate2, searchterm, cnt) ;
+		DocumentsResult result = null;
+		result =  this.getAlchemyDataNews(startdate2, enddate2, searchterm, cnt) ;
 		
 		// serialize results to json
 		Gson gson = new Gson();
@@ -91,9 +92,14 @@ public class AlchemyDataNewsAPI {
 
 	    Map<String, Object> params = new HashMap<String, Object>();
 
-	    String[] fields =
-	        new String[] { "enriched.url.title", "enriched.url.url", "enriched.url.author", "enriched.url.publicationDate",
-	            "enriched.url.enrichedTitle.entities", "enriched.url.enrichedTitle.docSentiment"};
+	    String[] fields = new String[] { 
+	    		"enriched.url.title", 
+	    		"enriched.url.url", 
+	    		"enriched.url.author", 
+	    		"enriched.url.publicationDate",
+	            "enriched.url.enrichedTitle.entities", 
+	            "enriched.url.enrichedTitle.docSentiment"
+	          };
 	    params.put(AlchemyDataNews.RETURN, StringUtils.join(fields, ","));
 	    params.put(AlchemyDataNews.START, startdate);
 	    params.put(AlchemyDataNews.END, enddate);
@@ -101,6 +107,7 @@ public class AlchemyDataNewsAPI {
 
 	    // Query on adjacent nested fields:
 	    params.put("q.enriched.url.enrichedTitle.keywords.keyword.text", searchTerm);
+	    // Other examples:
 	    //params.put("q.enriched.url.enrichedTitle.entities.entity", "|text=IBM,type=company|");
 	    //params.put("q.enriched.url.enrichedTitle.docSentiment.type", "positive");
 	    //params.put("q.enriched.url.enrichedTitle.taxonomy.taxonomy_.label", "technology and computing");

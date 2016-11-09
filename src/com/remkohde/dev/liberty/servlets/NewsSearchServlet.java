@@ -8,15 +8,24 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Part;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+
+import com.cloudant.client.api.Database;
+import com.google.gson.JsonObject;
+import com.remkohde.dev.liberty.nosql.CloudantClientMgr;
 
 /**
  * Servlet implementation class NewsSearchServlet
@@ -51,8 +60,8 @@ public class NewsSearchServlet extends HttpServlet {
 		String alchemyResults = getAlchemyNewsApi(hosturl, startdate, enddate, searchterm, count);
 		request.getSession().setAttribute("alchemyResults", alchemyResults);
 		
-		// Save to CloudantDB
-		String cloudantResults = postCloudantDbApi(hosturl, alchemyResults);
+		// Save to CloudantDB		
+		String cloudantResults = postCloudantDbApi(hosturl, alchemyResults, startdate, enddate, searchterm, count);
 		request.getSession().setAttribute("cloudantResults", cloudantResults);
 		
 		//request.getRequestDispatcher("pages/response.jsp").include(request, response);		
@@ -76,12 +85,37 @@ public class NewsSearchServlet extends HttpServlet {
 		return response;
 	}
 	
-	private String postCloudantDbApi(String hosturl, String jsonobj){		
+	private String postCloudantDbApi(String hosturl, String jsonobj, 
+			String startdate, String enddate, String searchterm, String count) 
+	 throws IOException {	
+		System.out.println("===== PostCloudantDbApi: ");
 		String params = "jsonobj="+jsonobj;
 		String urlString = hosturl+"/api/cloudant/data";
 		
-		String response = callApi("post", urlString, params);
-		return response;
+		Database db = CloudantClientMgr.getDB();
+		System.out.println("===== db: ");
+		
+		String id = String.valueOf(System.currentTimeMillis());
+		System.out.println("===== Creating new document with id : " + id);
+		Map<String, Object> data = new HashMap<String, Object>();
+		data.put("_id", id);
+		data.put("results", jsonobj);
+		data.put("searchdate", Calendar.getInstance().toString());
+		data.put("startdate", startdate);
+		data.put("enddate", enddate);
+		data.put("searchterm", searchterm);
+		data.put("count", count);
+		db.save(data);
+		System.out.println("===== Object saved to Cloudant");
+		
+		// attach the attachment object
+		HashMap<String, Object> obj = db.find(HashMap.class, id);
+		System.out.println("====Saved Object: "+obj); 
+		JsonObject jsonObject = new JsonObject();
+		jsonObject.addProperty("id", obj.get("_id") + "");
+		jsonObject.addProperty("results", obj.get("results") + "");
+		
+		return jsonObject.getAsString();
 	}
 	
 	private String callApi(String method, String urlString, String params){
