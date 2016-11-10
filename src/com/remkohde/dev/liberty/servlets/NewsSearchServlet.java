@@ -8,6 +8,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -88,29 +89,29 @@ public class NewsSearchServlet extends HttpServlet {
 	private String postCloudantDbApi(String hosturl, String jsonobj, 
 			String startdate, String enddate, String searchterm, String count) 
 	 throws IOException {	
-		System.out.println("===== PostCloudantDbApi: ");
 		String params = "jsonobj="+jsonobj;
 		String urlString = hosturl+"/api/cloudant/data";
 		
 		Database db = CloudantClientMgr.getDB();
-		System.out.println("===== db: ");
 		
 		String id = String.valueOf(System.currentTimeMillis());
+		SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
+		Calendar now = Calendar.getInstance();
+		String searchdate = format1.format(now.getTimeInMillis());
+		
 		System.out.println("===== Creating new document with id : " + id);
 		Map<String, Object> data = new HashMap<String, Object>();
 		data.put("_id", id);
-		data.put("results", jsonobj);
-		data.put("searchdate", Calendar.getInstance().toString());
+		data.put("results", jsonobj);		
+		data.put("searchdate", searchdate);
 		data.put("startdate", startdate);
 		data.put("enddate", enddate);
 		data.put("searchterm", searchterm);
 		data.put("count", count);
 		db.save(data);
-		System.out.println("===== Object saved to Cloudant");
 		
 		// attach the attachment object
 		HashMap<String, Object> obj = db.find(HashMap.class, id);
-		System.out.println("====Saved Object: "+obj); 
 		JsonObject jsonObject = new JsonObject();
 		jsonObject.addProperty("id", obj.get("_id") + "");
 		jsonObject.addProperty("results", obj.get("results") + "");
