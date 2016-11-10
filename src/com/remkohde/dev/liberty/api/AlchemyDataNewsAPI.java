@@ -16,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.ibm.watson.developer_cloud.alchemy.v1.AlchemyDataNews;
 import com.ibm.watson.developer_cloud.alchemy.v1.model.DocumentsResult;
@@ -62,10 +63,12 @@ public class AlchemyDataNewsAPI {
 		Gson gson = new Gson();
 		String json = gson.toJson(result);
 		JsonObject alchemyJsonObject = gson.fromJson(json, JsonObject.class);
+		JsonObject resultJsonObject = alchemyJsonObject.get("result").getAsJsonObject();
+		JsonArray docs = resultJsonObject.get("docs").getAsJsonArray();
 		
 		// create response
 		JsonObject jsonObject = new JsonObject();
-		jsonObject.add("docs", alchemyJsonObject);
+		jsonObject.add("docs", docs);
 		jsonObject.addProperty("startdate", startdate);
 		jsonObject.addProperty("enddate", enddate);
 		jsonObject.addProperty("searchterm", searchterm);

@@ -28,6 +28,7 @@ import com.cloudant.client.api.Database;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.remkohde.dev.liberty.nosql.CloudantClientMgr;
 
 /**
@@ -61,13 +62,18 @@ public class NewsSearchServlet extends HttpServlet {
 	
 		// Search AlchemyData News
 		String alchemyResults = getAlchemyNewsApi(hosturl, startdate, enddate, searchterm, count);
-		request.getSession().setAttribute("alchemyResults", alchemyResults);
+		//request.getSession().setAttribute("alchemyResults", alchemyResults);
 		
 		// Save to CloudantDB		
 		String cloudantResults = postCloudantDbApi(hosturl, alchemyResults, startdate, enddate, searchterm, count);
-		request.getSession().setAttribute("cloudantResults", cloudantResults);
+		// request.getSession().setAttribute("cloudantResults", cloudantResults);
 		
-		//request.getRequestDispatcher("pages/response.jsp").include(request, response);		
+		// Parse to D3js format: 
+		// [ {"publicationDate": 2016-10-01, "sentiment": 0.1234},
+		//   {"publicationDate": 2016-10-01, "sentiment": 0.2345} ]
+		String sentimentScores = parseToD3jsFormat(alchemyResults, startdate, enddate, searchterm, count);
+		request.getSession().setAttribute("result", sentimentScores);
+		
 		request.getRequestDispatcher("pages/newsanalysis_result.jsp").forward(request, response);
 	}
 
@@ -201,5 +207,26 @@ public class NewsSearchServlet extends HttpServlet {
 		return response;
 	}
 
+	public String parseToD3jsFormat(String alchemyResults, String startdate, String enddate,
+			String searchterm, String count) {
+		
+		Gson gson = new Gson();
+		//System.out.println("=====json: "+alchemyResults);
+		// [{"result":[{"docs":{"result":{"docs":[{
+		JsonArray jsonObject1 = gson.fromJson(alchemyResults, JsonArray.class);
+		
+		// create response
+		JsonObject jsonObject = new JsonObject();
+		jsonObject.add("result", jsonObject1);
+		jsonObject.addProperty("startdate", startdate);
+		jsonObject.addProperty("enddate", enddate);
+		jsonObject.addProperty("searchterm", searchterm);
+		jsonObject.addProperty("count", count);
+				
+		JsonArray jsonArrayResponse = new JsonArray();
+		jsonArrayResponse.add(jsonObject);
+		
+		return jsonArrayResponse.toString();
+	}
 
 }
