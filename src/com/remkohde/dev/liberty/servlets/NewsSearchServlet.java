@@ -25,6 +25,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
 import com.cloudant.client.api.Database;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.remkohde.dev.liberty.nosql.CloudantClientMgr;
 
@@ -77,7 +79,16 @@ public class NewsSearchServlet extends HttpServlet {
 		doGet(request, response);
 	}
 	
-	
+	/**
+	 * Calls the internal application API that calls the AlchemyData News API.
+	 * 
+	 * @param hosturl
+	 * @param startdate
+	 * @param enddate
+	 * @param searchterm
+	 * @param count
+	 * @return
+	 */
 	private String getAlchemyNewsApi(String hosturl, String startdate, String enddate, String searchterm, String count){		
 		String params = "startdate="+startdate+"&enddate="+enddate+"&searchterm="+searchterm+"&count="+count;
 		String urlString = hosturl+"/api/watson/news";
@@ -86,6 +97,18 @@ public class NewsSearchServlet extends HttpServlet {
 		return response;
 	}
 	
+	/**
+	 * Calls the internal application API that runs the Cloudant Client
+	 * 
+	 * @param hosturl
+	 * @param jsonobj
+	 * @param startdate
+	 * @param enddate
+	 * @param searchterm
+	 * @param count
+	 * @return
+	 * @throws IOException
+	 */
 	private String postCloudantDbApi(String hosturl, String jsonobj, 
 			String startdate, String enddate, String searchterm, String count) 
 	 throws IOException {	
@@ -99,10 +122,13 @@ public class NewsSearchServlet extends HttpServlet {
 		Calendar now = Calendar.getInstance();
 		String searchdate = format1.format(now.getTimeInMillis());
 		
+		Gson gson = new Gson();
+		JsonArray jsonObject1 = gson.fromJson(jsonobj, JsonArray.class);
+		
 		System.out.println("===== Creating new document with id : " + id);
 		Map<String, Object> data = new HashMap<String, Object>();
 		data.put("_id", id);
-		data.put("results", jsonobj);		
+		data.put("results", jsonObject1);		
 		data.put("searchdate", searchdate);
 		data.put("startdate", startdate);
 		data.put("enddate", enddate);
@@ -120,7 +146,6 @@ public class NewsSearchServlet extends HttpServlet {
 	}
 	
 	private String callApi(String method, String urlString, String params){
-		System.out.println("UrlString: "+urlString);
 		
 		String response = "";
 		HttpURLConnection conn = null;
@@ -162,7 +187,6 @@ public class NewsSearchServlet extends HttpServlet {
 				(conn.getInputStream())));	
 			String output;			
 			while ((output = br.readLine()) != null) {
-				System.out.println(output);
 				response += output;
 			}
 			conn.disconnect();
@@ -172,6 +196,8 @@ public class NewsSearchServlet extends HttpServlet {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		System.out.println("AlchemyData News response: "+response);
 		return response;
 	}
 

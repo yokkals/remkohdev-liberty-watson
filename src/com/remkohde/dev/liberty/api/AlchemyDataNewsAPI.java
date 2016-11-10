@@ -61,10 +61,11 @@ public class AlchemyDataNewsAPI {
 		// serialize results to json
 		Gson gson = new Gson();
 		String json = gson.toJson(result);
-
+		JsonObject alchemyJsonObject = gson.fromJson(json, JsonObject.class);
+		
 		// create response
 		JsonObject jsonObject = new JsonObject();
-		jsonObject.addProperty("docs", json);
+		jsonObject.add("docs", alchemyJsonObject);
 		jsonObject.addProperty("startdate", startdate);
 		jsonObject.addProperty("enddate", enddate);
 		jsonObject.addProperty("searchterm", searchterm);
