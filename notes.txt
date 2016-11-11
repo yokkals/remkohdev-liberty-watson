@@ -1,0 +1,118 @@
+<!--
+Next:
+Hookup Cloudant to Spark
+Retrieve the Sentiment Scores and Entities from Cloudant via Spark and push them to Big Insights
+Retrieve the full text article and store it on Hadoop
+Replace Ant with Maven
+Add a JUnit Test Stage
+-->
+
+<!--
+Setup steps
+<h3>Run on Localhost and Commit Simple Changes</h3>
+1. Create the following directories: '~/WebContent/css' and  '~/WebContent/js'
+2. Move '~/WebContent/util.js' and '~/WebContent/index.js' to '~/WebContent/js'
+3. Move '~/WebContent/style.css' to '~/WebContent/css'
+4. Change the '~/WebContent/index.html' as follows:
+<script src="https://gist.github.com/remkohdev/d17888da18d7c07854f2aeb201dc1262.js"></script>
+5. Add the following css to the '~/WebContent/css/style.css'
+<code>body {
+&nbsp;&nbsp;&nbsp;&nbsp;margin-top: 25px;
+}</code>
+6. Add two new files '~/.gitignore' and '~/.cfignore' with the following content:
+<code>*.class
+*.war
+target/
+.settings/
+/bin/
+.DS_Store</code>
+
+1. Right click the '~/Java Resources/src' or '~/src' source directory, and create a new Package 'com.&lt;username&gt;.dev.liberty',
+2. Right click the '~/src/com.&lt;username&gt;.dev.liberty' directory and create a new class file 'WatsonNewsServlet.java' 
+<script src="https://gist.github.com/remkohdev/5d40e762da002bafedf8ae21d82b580c.js"></script>
+3. Add, Commit and Push changes to Github
+4. Review the build and deploy stages in the Delivery Pipeline,
+5. Test the servlet by submitting the form request.
+
+Next let's add the required jars:
+<ul>
+<li>alchemy-3.5.1-SNAPSHOT.jar</li>
+<li>core-3.5.1-SNAPSHOT.jar</li>
+<li>commons-lang3-3.5.jar</li>
+<li>okhttp-3.5.0-SNAPSHOT.jar</li>
+<li>okhttp-urlconnection-3.5.0-SNAPSHOT.jar</li>
+<li>okio-1.12.0-SNAPSHOT.jar</li>
+</ul>
+
+Download the dependencies from <a href="https://github.com/remkohdev/remkohdev-liberty-watson/tree/master/WebContent/WEB-INF/lib" target="_blank">https://github.com/remkohdev/remkohdev-liberty-watson/tree/master/WebContent/WEB-INF/lib</a> or follow these instructions:
+<ol>
+<li>Clone the following repositories to a local library folder, e.g. '~/dev/lib/java/':
+<ul>
+<li><a href="https://github.com/watson-developer-cloud/java-sdk" target="_blank">https://github.com/watson-developer-cloud/java-sdk</a></li>
+<li><a href="https://github.com/square/okhttp" target="_blank">https://github.com/square/okhttp</a></li>
+<li><a href="https://github.com/square/okio" target="_blank">https://github.com/square/okio</a></li>
+</ul>
+</li>
+<li>Rename the 'java-sdk-master' folder to 'ibmwatson-java-sdk'</li>
+<li>Change into the 'ibmwatson-java-sdk' folder and run Maven
+<code>cd ~/dev/lib/java/ibmwatson-java-sdk
+mvn clean install</code>
+</li>
+<li>Copy the '~/alchemy/target/alchemy-3.5.1-SNAPSHOT.jar' archive to our project's '~/WebContent/WEB-INF/lib' folder</li>
+<li>Copy the '~/core/target/core-3.5.1-SNAPSHOT.jar' archive to our project's '~/WebContent/WEB-INF/lib' folder</li>
+<li>Change into the 'okhttp-master' folder and run Maven
+<code>cd ~/dev/lib/java/okhttp-master
+mvn clean install</code>
+</li>
+<li>Copy the 'okhttp/target/okhttp-3.5.0-SNAPSHOT.jar' and 'okhttp-urlconnection/target/okhttp-urlconnection-3.5.0-SNAPSHOT.jar' archive to our project's '~/WebContent/WEB-INF/lib' folder</li>
+<li>Change into the 'okio' folder and run Maven
+<code>cd ~/dev/lib/java/okio
+mvn clean install</code>
+</li>
+<li>Copy the 'okio/target/okio-1.12.0-SNAPSHOT.jar' archive to our project's '~/WebContent/WEB-INF/lib' folder</li>
+<li>Edit the '~/build.xml' and in the 'classpathDir' path-tag, add the following lines:
+<code>&lt;pathelement location="WebContent/WEB-INF/lib/alchemy-3.5.1-SNAPSHOT.jar"/&gt;</code>
+</li>
+<li>In Eclipse, right click the project and click 'properties' > Java Build Path > select the 'Libraries' tab > Add JARs > open the '~/WebContent/WEB-INF/lib/' folder and select the dependent archives, click OK > OK</li>
+<li>Add the depency Apache Commons Lang 3.5</li>
+<li>Go to <a href="https://commons.apache.org/proper/commons-lang/download_lang.cgi" target="_blank">https://commons.apache.org/proper/commons-lang/download_lang.cgi</a> and download the latest binary for version 3</li>
+<li>Unzip and move the 'commons-lang3-3.5' directory to a local library folder, e.g. '~/dev/lib/java/'</li>
+<li>Copy the 'commons-lang3-3.5.jar' archive to our project's '~/WebContent/WEB-INF/lib' folder</li>
+</ol>
+Change the Ant build file and the .classpath settings for Eclipse:
+<ol>
+<li>Edit the '~/build.xml' and in the 'classpathDir' path-tag, change the path settings:
+<script src="https://gist.github.com/remkohdev/3ee7191c2825970ae38b8ff35739dd00.js"></script>
+</li>
+<li>In Eclipse, right click the project and click 'properties' > Java Build Path > select the 'Libraries' tab > Add JARs > open the '~/WebContent/WEB-INF/lib/' folder and select the required archives, click OK > OK</li>
+</ol>
+
+
+<h3>Load Services Configuration</h3>
+To make sure that the configuration properties for the Bluemix services are loaded on localhost as well as on Bluemix, I first create a local properties file, then add the code to check if the so-called VCAP_SERVICES system environment variable with the Bluemix configuration is present, if not, then I will load the services configuration from the local properties file. 
+<ol>
+<li>Create a new file 'bluemix.json' in a new directory '~/WebContent/WEB-INF/classes/', which is by default loaded on the classpath in Liberty</li>
+<li>Exclude the bluemix.json file from source control, add the following line to .gitignore and .cfignore
+<code>bluemix.json</code>
+</li>
+<li>Go to Bluemix > Application Details > Runtime > Environment Variables and copy the 'VCAP_SERVICES' content, paste the content into the new bluemix.json file.</li>
+<li>Use the default GSON jar included in the Start Application, or</li>
+<li>Clone the GSON repository 'https://github.com/google/gson' to a local library, e.g. '~/dev/lib/java'</li>
+<li>Change into the 'gson' repository and run Maven 
+<code>cd gson
+mvn clean install</code>
+</li>
+<li>Copy the 'gson/target/gson-2.8.1-SNAPSHOT.jar' archive to our project's '~/WebContent/WEB-INF/lib' folder</li>
+<li>And add the 'gson-2.8.1-SNAPSHOT.jar' to the classpath. The '~/.classpath' file in the Eclipse project should contain:
+<script src="https://gist.github.com/remkohdev/c7e92bc8efcdda6d90c9aa946ebd2b66.js"></script>
+</li>
+<li>Make changes to the code in WatsonNewsServlet.java
+<script src="https://gist.github.com/remkohdev/f2e90c4982d6ed58296f4a0666ef1d1d.js"></script>
+</li>
+</ol>
+
+Next, change the WatsonNewsServlet.java file as below:
+<script src="https://gist.github.com/remkohdev/62f80e6ee8f0b7f1673b313247953322.js"></script>
+
+
+-->
