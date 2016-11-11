@@ -39,16 +39,34 @@
     var respEndDate = response.enddate;
     var respSearchTerm = response.searchterm;
     
+    // STEP 7 remove - begin
+    var body0 = document.body;
+    var divOut = document.getElementById("out");
+     
+    var el1 = document.createElement("h1");
+    var elTxt1 = document.createTextNode("News Sentiment for '"+respSearchTerm+"'"); 
+  	el1.appendChild(elTxt1);  
+  	divOut.appendChild(el1);
+    var el2 = document.createElement("h3");
+    var elTxt2 = document.createTextNode("from "+respStartDate+" to "+respEndDate); 
+  	el2.appendChild(elTxt2);  
+  	divOut.appendChild(el2);
+  	// STEP 7 remove - end 
   	
+  	/**
+    // STEP 7 add - begin
     var body1 = d3.select("body");    
     body1.append("h1")
       .text("News Sentiment for '"+respSearchTerm+"'");
     body1.append("h3")
       .text("from "+respStartDate+" to "+respEndDate);
-    
+    // STEP 7 add - end    
+    */
 	</script>
-	
+	<!-- 
+	   STEP 7 add - begin
 	<script type=text/javascript src="js/d3jsgraph.js"></script>
-
+	   STEP 7 add - end  
+	-->
 </body>
 </html>
