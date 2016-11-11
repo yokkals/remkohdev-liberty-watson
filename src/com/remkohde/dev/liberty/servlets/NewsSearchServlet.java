@@ -138,7 +138,6 @@ public class NewsSearchServlet extends HttpServlet {
 		Gson gson = new Gson();
 		JsonArray jsonObject1 = gson.fromJson(jsonobj, JsonArray.class);
 		
-		System.out.println("===== Creating new document with id : " + id);
 		Map<String, Object> data = new HashMap<String, Object>();
 		data.put("_id", id);
 		data.put("results", jsonObject1);		
@@ -289,7 +288,6 @@ public class NewsSearchServlet extends HttpServlet {
 				JsonObject aggregate = new JsonObject();
 				aggregate.addProperty("publicationDate", uniqueDate);
 				aggregate.addProperty("sentimentScore", avgSentiment);
-				System.out.println("=== "+aggregate.toString());
 				jsonD3jsArray.add(aggregate);
 			}
 			
@@ -308,7 +306,6 @@ public class NewsSearchServlet extends HttpServlet {
 		}catch(ParseException pe){
 	    	  pe.printStackTrace();
 	    }
-		System.out.println("=====response: "+response.toString());
 		return response.toString();
 	}
 
