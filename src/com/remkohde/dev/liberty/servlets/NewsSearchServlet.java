@@ -70,16 +70,20 @@ public class NewsSearchServlet extends HttpServlet {
 		// Search AlchemyData News
 		String alchemyResults = getAlchemyNewsApi(hosturl, startdate, enddate, searchterm, count);
 		//request.getSession().setAttribute("alchemyResults", alchemyResults);
-		
+
 		// Save to CloudantDB		
 		String cloudantResults = postCloudantDbApi(hosturl, alchemyResults, startdate, enddate, searchterm, count);
 		// request.getSession().setAttribute("cloudantResults", cloudantResults);
 		
+		/**
+		 * STEP 7 add - begin
 		// Parse to D3js format: 
 		// [ {"publicationDate": 2016-10-01, "sentimentScore": 0.1234},
 		//   {"publicationDate": 2016-10-01, "sentimentScore": 0.2345} ]
 		String sentimentScores = parseToD3jsFormat(alchemyResults, searchdate, startdate, enddate, searchterm, count);
 		request.getSession().setAttribute("result", sentimentScores);
+		 * STEP 7 add - end
+		 */
 		
 		request.getRequestDispatcher("pages/newsanalysis_result.jsp").forward(request, response);
 	}
