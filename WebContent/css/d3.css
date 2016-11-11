@@ -1,0 +1,30 @@
+@CHARSET "UTF-8";
+
+table {
+	table-layout: fixed;
+	word-wrap: break-word;
+	position: relative;
+	border-collapse: collapse;
+	border-color: #ffffff;
+	border: 1px solid #ffffff;
+	margin-left: 50px;
+	width: 400px;
+}
+
+td, th {
+  	padding: 1px 4px;
+    border: 1px solid #ffffff;
+}
+
+.axis path,
+.axis line {
+  	fill: none;
+  	stroke: #000;
+  	shape-rendering: crispEdges;
+}
+.line {
+  	fill: none;
+  	stroke: steelblue;
+  	stroke-width: 1.5px;
+}
+

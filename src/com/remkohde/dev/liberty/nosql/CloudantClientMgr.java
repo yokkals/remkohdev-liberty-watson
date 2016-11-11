@@ -1,24 +1,10 @@
 package com.remkohde.dev.liberty.nosql;
 
-import java.security.SecureRandom;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-
 import com.cloudant.client.api.ClientBuilder;
 import com.cloudant.client.api.CloudantClient;
 import com.cloudant.client.api.Database;
 import com.cloudant.client.org.lightcouch.CouchDbException;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+
 import com.remkohde.dev.liberty.api.BluemixConfig;
 
 public class CloudantClientMgr {
@@ -44,7 +30,6 @@ public class CloudantClientMgr {
 		String user = BluemixConfig.getInstance().getCloudantDBUsername();
 		String password = BluemixConfig.getInstance().getCloudantDBPassword();	
 		try {
-			System.out.print("=====Create CloudantClient");
 			CloudantClient client = ClientBuilder.account(user)
 					.username(user)
 					.password(password)

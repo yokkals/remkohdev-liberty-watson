@@ -10,33 +10,7 @@
 	<meta name="apple-mobile-web-app-capable" content="yes" />
 	
 	<link rel="stylesheet" href="css/style.css" />
-	  <style type="text/css">
-    body {
-      margin: 50px;
-      font: 10px sans-serif;
-    }
-    .axis path,
-    .axis line {
-      fill: none;
-      stroke: #000;
-      shape-rendering: crispEdges;
-    }
-    .line {
-      fill: none;
-      stroke: steelblue;
-      stroke-width: 1.5px;
-    }
-    table {
-    	width: 400px;
-    }
-    td, th {
-      padding: 1px 4px;
-      border: 1px solid black;
-    }
-    table {
-        border-collapse: collapse;
-    }
-  </style>
+	<link rel="stylesheet" href="css/d3.css" />
 </head>
 
 <body>
