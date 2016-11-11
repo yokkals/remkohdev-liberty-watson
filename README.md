@@ -1,14 +1,32 @@
-# Java Cloudant Web Starter Overview
-Github repository: https://github.com/&lt;username&gt;/&lt;username&gt;-liberty-watson
+# Using Watson, CloudantDb and D3js with WebSphere Liberty 
 
-## Branch
-Step1
+# Installation
 
-The Java Cloudant Web Starter demonstrates how to use the Bluemix Cloudant NoSQL DB service. The app displays persisted files and lets the user upload new files or delete old files.
+* Fork the following repository to your Github account: [https://github.com/remkohdev/remkohdev-liberty-watson](https://github.com/remkohdev/remkohdev-liberty-watson)
+* Name your fork 'https://github.com/&lt;username&gt;/&lt;username&gt;-liberty-watson'
+* Create a Java Liberty Starterapp on Bluemix
+* Enable the Toolchain in your application
+* Configure the Code repository URL of your Bluemix application to your fork
+* Checkout branch 'step-1' to your localhost
+* Import the project into Eclipse
+* Run on Server
 
-## Decomposition Instructions
 
-* See src/example/nosql/CloudantClientMgr.java for how to obtain and use the Cloudant credentials
-* See src/example/nosql/AttachServlet.java for the file upload API
-* See src/example/noqsl/ResourceServlet.java for the file CRUD API
-* See WebContent/index.js and WebContent/util.js for how the front-end calls the back-end API
+# Git Branches
+Create a new branch and push to remote:
+
+    $ git checkout -b newbranch
+    $ git push origin newbranch
+
+Checkout a branch
+
+    $ git checkout -b newbranch
+
+Merge with master
+
+    $ git checkout master
+    $ git merge 
+
+Delete a branch
+
+    $ git branch -d newbranch
