@@ -1,3 +1,7 @@
+git checkout -b v0.6.0
+git push -u origin v0.6.0
+
+
 <!--
 Next:
 Hookup Cloudant to Spark

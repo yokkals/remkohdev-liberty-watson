@@ -71,9 +71,13 @@ public class NewsSearchServlet extends HttpServlet {
 		String alchemyResults = getAlchemyNewsApi(hosturl, startdate, enddate, searchterm, count);
 		//request.getSession().setAttribute("alchemyResults", alchemyResults);
 
+		/** 
+		 * STEP 6 add - begin
 		// Save to CloudantDB		
 		String cloudantResults = postCloudantDbApi(hosturl, alchemyResults, startdate, enddate, searchterm, count);
 		// request.getSession().setAttribute("cloudantResults", cloudantResults);
+		 * STEP 6 add - end
+		*/
 		
 		/**
 		 * STEP 7 add - begin
