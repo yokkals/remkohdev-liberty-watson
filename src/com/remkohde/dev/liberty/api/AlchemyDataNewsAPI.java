@@ -69,10 +69,6 @@ public class AlchemyDataNewsAPI {
 		// create response
 		JsonObject jsonObject = new JsonObject();
 		jsonObject.add("docs", docs);
-		jsonObject.addProperty("startdate", startdate);
-		jsonObject.addProperty("enddate", enddate);
-		jsonObject.addProperty("searchterm", searchterm);
-		jsonObject.addProperty("count", count);
 		
 		JsonArray jsonArrayResponse = new JsonArray();
 		jsonArrayResponse.add(jsonObject);

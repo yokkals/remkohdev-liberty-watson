@@ -8,11 +8,15 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Vector;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -55,6 +59,9 @@ public class NewsSearchServlet extends HttpServlet {
 		
 		String hosturl = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+""+request.getContextPath();
 		
+		SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
+		Calendar now = Calendar.getInstance();
+		String searchdate = format1.format(now.getTimeInMillis());
 		String startdate = (String) request.getParameter("startdate");
 		String enddate = (String) request.getParameter("enddate");
 		String searchterm = (String) request.getParameter("searchterm");
@@ -69,9 +76,9 @@ public class NewsSearchServlet extends HttpServlet {
 		// request.getSession().setAttribute("cloudantResults", cloudantResults);
 		
 		// Parse to D3js format: 
-		// [ {"publicationDate": 2016-10-01, "sentiment": 0.1234},
-		//   {"publicationDate": 2016-10-01, "sentiment": 0.2345} ]
-		String sentimentScores = parseToD3jsFormat(alchemyResults, startdate, enddate, searchterm, count);
+		// [ {"publicationDate": 2016-10-01, "sentimentScore": 0.1234},
+		//   {"publicationDate": 2016-10-01, "sentimentScore": 0.2345} ]
+		String sentimentScores = parseToD3jsFormat(alchemyResults, searchdate, startdate, enddate, searchterm, count);
 		request.getSession().setAttribute("result", sentimentScores);
 		
 		request.getRequestDispatcher("pages/newsanalysis_result.jsp").forward(request, response);
@@ -207,26 +214,102 @@ public class NewsSearchServlet extends HttpServlet {
 		return response;
 	}
 
-	public String parseToD3jsFormat(String alchemyResults, String startdate, String enddate,
+	public String parseToD3jsFormat(String alchemyResults, String searchdate, String startdate, String enddate,
 			String searchterm, String count) {
-		
-		Gson gson = new Gson();
-		//System.out.println("=====json: "+alchemyResults);
-		// [{"result":[{"docs":{"result":{"docs":[{
-		JsonArray jsonObject1 = gson.fromJson(alchemyResults, JsonArray.class);
-		
-		// create response
-		JsonObject jsonObject = new JsonObject();
-		jsonObject.add("result", jsonObject1);
-		jsonObject.addProperty("startdate", startdate);
-		jsonObject.addProperty("enddate", enddate);
-		jsonObject.addProperty("searchterm", searchterm);
-		jsonObject.addProperty("count", count);
-				
-		JsonArray jsonArrayResponse = new JsonArray();
-		jsonArrayResponse.add(jsonObject);
-		
-		return jsonArrayResponse.toString();
+		JsonArray response = null;
+		try {
+			
+			Gson gson = new Gson();
+			JsonArray resultArray = gson.fromJson(alchemyResults, JsonArray.class);
+			JsonObject resultJsonObject = resultArray.get(0).getAsJsonObject();
+			JsonArray docs = resultJsonObject.getAsJsonArray("docs");
+			
+			// create D3js array format
+			JsonArray allSearchResultsArray = new JsonArray();
+			for(int i=0; i< docs.size(); i++) {
+				  JsonObject row = new JsonObject();
+			      JsonObject doc = docs.get(i).getAsJsonObject();
+			      // doc.source.enriched.url.enrichedTitle.docSentiment.score
+			      // doc.source.enriched.url.enrichedTitle.docSentiment.type
+			      // doc.source.enriched.url.publicationDate
+			      JsonObject url = doc.get("source").getAsJsonObject()
+			    		  .get("enriched").getAsJsonObject()
+			    		  .get("url").getAsJsonObject();
+			      JsonObject docSentiment = url.get("enrichedTitle").getAsJsonObject()
+			    		  .get("docSentiment").getAsJsonObject();
+			      String docSentimentScore = docSentiment.get("score").getAsString();
+			      String docSentimentType = docSentiment.get("type").getAsString();	
+			      JsonObject publicationDate = url.get("publicationDate").getAsJsonObject();
+			      String publicationDateDate = publicationDate.get("date").getAsString();
+			      
+			      // From "Oct 29, 2014 12:00:00 AM" to "2014-10-29"
+			      SimpleDateFormat format1 = new SimpleDateFormat("MMM dd, yyyy hh:mm:ss a");
+			      SimpleDateFormat format2 = new SimpleDateFormat("yyyy-MM-dd");
+			      Date dte = format1.parse(publicationDateDate);
+		    	  String pubDate = format2.format(dte);
+			      
+			      row.addProperty("publicationDate", pubDate);
+			      row.addProperty("sentimentScore", docSentimentScore);
+			      allSearchResultsArray.add(row);
+			}
+			
+			// get uniquedates
+			SimpleDateFormat format3 = new SimpleDateFormat("yyyy-MM-dd");
+			Date startdte = format3.parse(startdate);
+			Date enddte = format3.parse(enddate);
+			Vector<String> uniqueDates = new Vector<String>();
+			for(int i=0; i< allSearchResultsArray.size(); i++) {
+				String pubDate = allSearchResultsArray.get(i).getAsJsonObject().get("publicationDate").getAsString();
+				Date pubdte = format3.parse(pubDate);
+				if(pubdte.before(startdte) || pubdte.after(enddte)){
+					continue;
+				}
+				if(! uniqueDates.contains(pubDate)){
+					uniqueDates.addElement(pubDate);
+				}
+			}
+			// sort uniquedates
+			Collections.sort(uniqueDates);
+			
+			// aggregate sentimentScores per unique pubDate
+			JsonArray jsonD3jsArray = new JsonArray();
+			int i1 = 0;
+			for(String uniqueDate : uniqueDates){
+				i1++;
+				double sentiments = 0.0;
+				int i2=0;
+				for(int i=0; i< allSearchResultsArray.size(); i++) {
+					String pubDate = allSearchResultsArray.get(i).getAsJsonObject().get("publicationDate").getAsString();
+					if(uniqueDate.compareTo(pubDate)==0){
+						i2++;
+						sentiments += allSearchResultsArray.get(i).getAsJsonObject().get("sentimentScore").getAsDouble();
+					}
+				}
+				double avgSentiment = sentiments/i2;
+				JsonObject aggregate = new JsonObject();
+				aggregate.addProperty("publicationDate", uniqueDate);
+				aggregate.addProperty("sentimentScore", avgSentiment);
+				System.out.println("=== "+aggregate.toString());
+				jsonD3jsArray.add(aggregate);
+			}
+			
+			// create response object
+			JsonObject result = new JsonObject();
+			result.addProperty("searchdate", searchdate);
+			result.addProperty("startdate", startdate);
+			result.addProperty("enddate", enddate);
+			result.addProperty("searchterm", searchterm);
+			result.addProperty("count", count);
+			result.add("result", jsonD3jsArray);
+			
+			response = new JsonArray();
+			response.add(result);
+			
+		}catch(ParseException pe){
+	    	  pe.printStackTrace();
+	    }
+		System.out.println("=====response: "+response.toString());
+		return response.toString();
 	}
 
 }
