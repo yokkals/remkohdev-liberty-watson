@@ -69,7 +69,7 @@ public class NewsSearchServlet extends HttpServlet {
 	
 		// Search AlchemyData News
 		String alchemyResults = getAlchemyNewsApi(hosturl, startdate, enddate, searchterm, count);
-		//request.getSession().setAttribute("alchemyResults", alchemyResults);
+		request.getSession().setAttribute("result", alchemyResults);
 
 		/** 
 		 * STEP 6 add - begin

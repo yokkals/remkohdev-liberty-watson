@@ -31,18 +31,23 @@
     <script type=text/javascript src="js/d3js/d3-v3/d3.min.js"></script>
   
     <script type="text/javascript"> 
-	var response = ${result}[0];
+    var response = ${result}[0];
 	var responseAsStr = JSON.stringify(response);
     
+    var divOut = document.getElementById("out");
+    
+    var el3 = document.createElement("p");
+    var elTxt3 = document.createTextNode(responseAsStr); 
+  	el3.appendChild(elTxt3);  
+  	divOut.appendChild(el3);  	
+  	
+    /**
+     * STEP 7 remove - begin
     var data = response.result;
     var respStartDate = response.startdate;
     var respEndDate = response.enddate;
     var respSearchTerm = response.searchterm;
     
-    // STEP 7 remove - begin
-    var body0 = document.body;
-    var divOut = document.getElementById("out");
-     
     var el1 = document.createElement("h1");
     var elTxt1 = document.createTextNode("News Sentiment for '"+respSearchTerm+"'"); 
   	el1.appendChild(elTxt1);  
@@ -51,8 +56,9 @@
     var elTxt2 = document.createTextNode("from "+respStartDate+" to "+respEndDate); 
   	el2.appendChild(elTxt2);  
   	divOut.appendChild(el2);
-  	// STEP 7 remove - end 
-  	
+  	 * STEP 7 remove - end 
+  	 */
+  	 
   	/**
     // STEP 7 add - begin
     var body1 = d3.select("body");    
