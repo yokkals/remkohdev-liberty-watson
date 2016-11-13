@@ -3,9 +3,10 @@ applications:
   memory: 512M
   instances: 1
   domain: mybluemix.net
-  name: remkohdev-liberty-watson
-  host: remkohdev-liberty-watson
+  name: CloudantStarterApp
+  host: yokkals-liberty-watson
   disk_quota: 1024M
   services:
-  - AlchemyAPI-jp
-  - remkohdev-liberty-watson-cloudantNoSQLDB
+  - CloudantStarterApp-cloudantNoSQLDB
+  - AlchemyAPI-8k
+  - availability-monitoring-auto
